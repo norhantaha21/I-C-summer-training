@@ -1,25 +1,20 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const authRoutes = require('./routes/authRoutes');
-const protectedRoutes = require('./routes/protectedRoutes');
+import express from "express";
+import morgan from "morgan";
+import connectDB from "./config/db.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
-dotenv.config();
 const app = express();
-app.use(cors());
+connectDB();
+
 app.use(express.json());
+app.use(morgan("dev"));
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error(err));
+app.use("/api/categories", categoryRoutes);
 
-app.use('/api/auth', authRoutes);
-app.use('/api/protected', protectedRoutes);
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
+// Route للـ home
+app.get("/", (req, res) => {
+  res.send("🚀 Service Category API is running. Use /api/categories");
 });
-app.get('/', (req, res) => {
-  res.send('Auth API is running ✅');
-});
+
+const PORT = 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
